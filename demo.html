@@ -6,7 +6,7 @@
     <title>Finance Tracker — Demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Lora:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Lora:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
     <script>
@@ -17,8 +17,8 @@
                 bodyWeight: '400', bodySize: '14px',
                 chart: { accent: '#00d26a', positive: '#00d26a', negative: '#ff4757', grid: 'rgba(42,51,72,0.8)', palette: ['#00d26a','#00b4d8','#ff6b6b','#ffd93d','#c77dff','#ff8fab','#72efdd','#ffb703','#8338ec','#fb5607'], tooltipBg: '#1a1f2e', tooltipTitle: '#e8eaed', tooltipBody: '#8b95a5', tooltipBorder: '#2a3348', muted: '#2a3348' },
             },
-            apple: {
-                name: 'Apple', icon: '\uD83E\uDDE0',
+            modern: {
+                name: 'Modern', icon: '\uD83E\uDDE0',
                 vars: { '--bg-page': '#f5f5f7', '--bg-white': '#ffffff', '--bg-hover': '#f0f0f2', '--border': '#d2d2d7', '--border-subtle': '#e8e8ed', '--accent': '#0071e3', '--accent-light': '#e8f2ff', '--accent-hover': '#0062cc', '--positive': '#28cd41', '--positive-light': '#eafbec', '--negative': '#ff3b30', '--negative-light': '#fff1f0', '--text-primary': '#1d1d1f', '--text-secondary': '#6e6e73', '--text-muted': '#aeaeb2', '--font-display': "'Outfit', sans-serif", '--font-body': "'Outfit', sans-serif", '--radius': '14px', '--radius-sm': '10px', '--radius-pill': '50px', '--shadow-sm': '0 1px 3px rgba(0,0,0,0.04)', '--shadow': '0 2px 10px rgba(0,0,0,0.06)', '--shadow-md': '0 4px 20px rgba(0,0,0,0.08)' },
                 bodyWeight: '400', bodySize: '15px',
                 chart: { accent: '#0071e3', positive: '#28cd41', negative: '#ff3b30', grid: 'rgba(210,210,215,0.6)', palette: ['#0071e3','#28cd41','#ff2d55','#af52de','#5ac8fa','#ff9500','#ff3b30','#30d158','#bf5af2','#ff9f0a'], tooltipBg: '#ffffff', tooltipTitle: '#1d1d1f', tooltipBody: '#6e6e73', tooltipBorder: '#d2d2d7', muted: '#e2e5ea' },
@@ -31,13 +31,13 @@
             },
             vintage: {
                 name: 'Vintage', icon: '\uD83D\uDCDC',
-                vars: { '--bg-page': '#faf6f0', '--bg-white': '#fffdf8', '--bg-hover': '#f5ede3', '--border': '#e0d5c5', '--border-subtle': '#eae2d6', '--accent': '#b47a4a', '--accent-light': '#faf0e5', '--accent-hover': '#9a6840', '--positive': '#5a8a60', '--positive-light': '#f0f7f0', '--negative': '#b54545', '--negative-light': '#fdf0f0', '--text-primary': '#3a2e22', '--text-secondary': '#7a6a55', '--text-muted': '#a89880', '--font-display': "'Lora', serif", '--font-body': "'Source Sans 3', sans-serif", '--radius': '10px', '--radius-sm': '6px', '--radius-pill': '8px', '--shadow-sm': '0 1px 4px rgba(120,90,50,0.06)', '--shadow': '0 2px 10px rgba(120,90,50,0.1)', '--shadow-md': '0 4px 16px rgba(120,90,50,0.12)' },
+                vars: { '--bg-page': '#faf6f0', '--bg-white': '#fffdf8', '--bg-hover': '#f5ede3', '--border': '#e0d5c5', '--border-subtle': '#eae2d6', '--accent': '#b47a4a', '--accent-light': '#faf0e5', '--accent-hover': '#9a6840', '--positive': '#5a8a60', '--positive-light': '#f0f7f0', '--negative': '#b54545', '--negative-light': '#fdf0f0', '--text-primary': '#3a2e22', '--text-secondary': '#7a6a55', '--text-muted': '#a89880', '--font-display': "'Caveat', cursive", '--font-body': "'Patrick Hand', cursive", '--radius': '10px', '--radius-sm': '6px', '--radius-pill': '8px', '--shadow-sm': '0 1px 4px rgba(120,90,50,0.06)', '--shadow': '0 2px 10px rgba(120,90,50,0.1)', '--shadow-md': '0 4px 16px rgba(120,90,50,0.12)' },
                 bodyWeight: '400', bodySize: '15px',
                 chart: { accent: '#b47a4a', positive: '#5a8a60', negative: '#b54545', grid: 'rgba(224,213,197,0.8)', palette: ['#b47a4a','#5a8a60','#c25450','#8b6fa0','#5689a0','#c9a227','#a0522d','#6b8e6b','#957dad','#cc7722'], tooltipBg: '#fffdf8', tooltipTitle: '#3a2e22', tooltipBody: '#7a6a55', tooltipBorder: '#e0d5c5', muted: '#eae2d6' },
             },
         };
-        const _savedTheme = localStorage.getItem('demoTheme') || 'apple';
-        const _t = THEMES[_savedTheme] || THEMES.apple;
+        const _savedTheme = localStorage.getItem('demoTheme') || 'modern';
+        const _t = THEMES[_savedTheme] || THEMES.modern;
         (function() { const r = document.documentElement.style; Object.entries(_t.vars).forEach(([k, v]) => r.setProperty(k, v)); document.documentElement.dataset.theme = _savedTheme; })();
         const CHART_ACCENT = _t.chart.accent, CHART_POSITIVE = _t.chart.positive, CHART_NEGATIVE = _t.chart.negative, CHART_GRID = _t.chart.grid, CHART_PALETTE = _t.chart.palette, CHART_MUTED = _t.chart.muted;
         function accentRGBA(a) { const h = CHART_ACCENT.replace('#',''); return 'rgba('+parseInt(h.substring(0,2),16)+','+parseInt(h.substring(2,4),16)+','+parseInt(h.substring(4,6),16)+','+a+')'; }
@@ -282,7 +282,7 @@
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F3A8;</div>
                         <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">4 Themes</div>
-                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Bloomberg, Apple, Cute, Vintage</div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Bloomberg, Modern, Cute, Vintage</div>
                     </div>
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F4B0;</div>
@@ -426,7 +426,7 @@ function renderSpendTxn(txns) {
 document.addEventListener('DOMContentLoaded', function() {
     document.body.style.fontWeight = _t.bodyWeight; document.body.style.fontSize = _t.bodySize;
     // Theme dropdown
-    const dd = document.getElementById('themeDropdown'), saved = localStorage.getItem('demoTheme')||'apple';
+    const dd = document.getElementById('themeDropdown'), saved = localStorage.getItem('demoTheme')||'modern';
     Object.entries(THEMES).forEach(([k, th]) => {
         const b = document.createElement('button'); b.className = 'theme-option'+(k===saved?' active':'');
         b.innerHTML = '<span class="theme-dots">'+[th.vars['--accent'],th.vars['--bg-page'],th.vars['--text-primary']].map(c=>'<span class="theme-dot" style="background:'+c+'"></span>').join('')+'</span><span>'+th.icon+' '+th.name+'</span>';
