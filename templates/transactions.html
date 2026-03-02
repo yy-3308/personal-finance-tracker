@@ -93,6 +93,82 @@
         color: var(--text-muted);
         margin-left: auto;
     }
+
+    /* ── NBIM-inspired table styling ── */
+    #txnTable thead th {
+        border-bottom: 2px solid var(--border);
+        border-top: none;
+    }
+    #txnTable tbody td {
+        padding-top: 0.9rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid transparent;
+    }
+    #txnTable tbody tr:not(.txn-detail-row):nth-child(even) td {
+        background: var(--bg-hover);
+    }
+    #txnTable tbody tr {
+        cursor: pointer;
+    }
+    #txnTable tbody tr:not(.txn-detail-row):hover td {
+        background: var(--accent-light);
+    }
+    #txnTable tbody tr:not(.txn-detail-row):hover td:first-child {
+        box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .pill-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-top: 0.4rem;
+    }
+    .pill-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        min-width: 60px;
+    }
+
+    /* ── Expandable row detail ── */
+    .txn-detail-row td {
+        padding: 0 !important;
+        border-bottom: 1px solid transparent !important;
+        background: var(--bg-hover) !important;
+        box-shadow: none !important;
+    }
+    .txn-detail-row:hover td {
+        box-shadow: none !important;
+    }
+    .txn-detail-inner {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    .txn-detail-inner.open {
+        max-height: 200px;
+    }
+    .txn-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+    }
+    .txn-detail-grid .detail-item .detail-label {
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 0.15rem;
+    }
+    .txn-detail-grid .detail-item .detail-value {
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
 </style>
 
 <div class="page-header">
@@ -113,7 +189,9 @@
         </div>
         <span class="txn-count" id="txnCount"></span>
     </div>
-    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">Click a category tag to recategorize all matching transactions</div>
+    <div class="pill-row" id="categoryPills"></div>
+    <div class="pill-row" id="accountPills"></div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; margin-top: 0.5rem;">Click a category tag to recategorize all matching transactions</div>
     <table id="txnTable">
         <thead>
             <tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right;">Amount</th><th>Account</th></tr>
@@ -124,6 +202,33 @@
 
 <script>
 let allCategories = [], allTxns = [], currentFilter = 'all';
+let activeCategoryPills = new Set(), activeAccountPills = new Set();
+
+function formatAmount(amt) {
+    const abs = Math.abs(amt).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return amt >= 0 ? '+$' + abs : '-$' + abs;
+}
+
+function buildFilterPills() {
+    activeCategoryPills.clear();
+    activeAccountPills.clear();
+    const cats = [...new Set(allTxns.map(t => t.category))].sort();
+    const accts = [...new Set(allTxns.map(t => t.account))].sort();
+    const catContainer = document.getElementById('categoryPills');
+    const acctContainer = document.getElementById('accountPills');
+    if (!cats.length) { catContainer.innerHTML = ''; acctContainer.innerHTML = ''; return; }
+    catContainer.innerHTML = '<span class="pill-label">Category</span>' +
+        cats.map(c => '<button class="filter-btn" data-pill-cat="' + c + '" onclick="togglePill(\'cat\',\'' + c.replace(/'/g, "\\'") + '\',this)">' + c + '</button>').join('');
+    acctContainer.innerHTML = '<span class="pill-label">Account</span>' +
+        accts.map(a => '<button class="filter-btn" data-pill-acct="' + a + '" onclick="togglePill(\'acct\',\'' + a.replace(/'/g, "\\'") + '\',this)">' + a + '</button>').join('');
+}
+
+function togglePill(type, value, btn) {
+    const set = type === 'cat' ? activeCategoryPills : activeAccountPills;
+    if (set.has(value)) { set.delete(value); btn.classList.remove('active'); }
+    else { set.add(value); btn.classList.add('active'); }
+    applyFilters();
+}
 
 function loadTransactions() {
     const month = getSelectedMonth();
@@ -133,6 +238,7 @@ function loadTransactions() {
             allCategories = data.all_categories || [];
             allTxns = data.transactions || [];
             renderSummary(allTxns);
+            buildFilterPills();
             applyFilters();
             makeSortable('txnTable');
         });
@@ -170,7 +276,7 @@ function renderSummary(txns) {
 
 function setFilter(filter) {
     currentFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
     applyFilters();
 }
 
@@ -188,6 +294,12 @@ function applyFilters() {
 
     if (search) {
         filtered = filtered.filter(t => t.description.toLowerCase().includes(search) || t.account.toLowerCase().includes(search));
+    }
+    if (activeCategoryPills.size > 0) {
+        filtered = filtered.filter(t => activeCategoryPills.has(t.category));
+    }
+    if (activeAccountPills.size > 0) {
+        filtered = filtered.filter(t => activeAccountPills.has(t.account));
     }
 
     document.getElementById('txnCount').textContent = filtered.length + ' of ' + allTxns.length + ' transactions';
@@ -224,30 +336,69 @@ function updateCategory(txnId, category, applyAll) {
     });
 }
 
+function collapseAllDetails() {
+    document.querySelectorAll('.txn-detail-row').forEach(r => r.remove());
+}
+
+function toggleTxnDetail(row, t) {
+    const existing = row.nextElementSibling;
+    if (existing && existing.classList.contains('txn-detail-row')) {
+        existing.querySelector('.txn-detail-inner').classList.remove('open');
+        setTimeout(() => existing.remove(), 300);
+        return;
+    }
+    collapseAllDetails();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const d = new Date(t.date + 'T00:00:00');
+    const dayName = days[d.getDay()];
+    const cls = t.amount < 0 ? 'negative' : 'positive';
+    const detailTr = document.createElement('tr');
+    detailTr.className = 'txn-detail-row';
+    detailTr.innerHTML = '<td colspan="5"><div class="txn-detail-inner"><div class="txn-detail-grid">' +
+        '<div class="detail-item"><div class="detail-label">Description</div><div class="detail-value">' + t.description + '</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">' + dayName + ', ' + t.date + '</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Category</div><div class="detail-value">' + t.category + '</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Amount</div><div class="detail-value ' + cls + '">' + formatAmount(t.amount) + '</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Account</div><div class="detail-value">' + t.account + '</div></div>' +
+        '</div></div></td>';
+    row.after(detailTr);
+    requestAnimationFrame(() => detailTr.querySelector('.txn-detail-inner').classList.add('open'));
+}
+
 function renderTransactions(txns) {
+    collapseAllDetails();
     const tbody = document.querySelector('#txnTable tbody');
-    tbody.innerHTML = txns.map(t => {
+    tbody.innerHTML = txns.map((t, i) => {
         const cls = t.amount < 0 ? 'negative' : 'positive';
         const catBg = ['Transfer', 'Income', 'Interest'].includes(t.category) ? 'muted' : 'bg-accent';
-        return '<tr>' +
+        return '<tr class="txn-row" data-txn-idx="' + i + '">' +
             '<td>' + t.date + '</td>' +
             '<td style="color:var(--text-primary);font-weight:500;">' + t.description + '</td>' +
             '<td>' +
                 '<div class="cat-dropdown" data-txn-id="' + t.id + '">' +
-                    '<span class="tag ' + catBg + '" onclick="toggleCatMenu(this)">' + t.category + '</span>' +
-                    '<div class="cat-menu">' +
+                    '<span class="tag ' + catBg + '" onclick="event.stopPropagation();toggleCatMenu(this)">' + t.category + '</span>' +
+                    '<div class="cat-menu" onclick="event.stopPropagation()">' +
                         allCategories.map(cat =>
-                            '<div class="cat-menu-item' + (cat === t.category ? ' active' : '') + '" onclick="selectCategory(this, \'' + cat + '\', true)">' +
+                            '<div class="cat-menu-item' + (cat === t.category ? ' active' : '') + '" onclick="event.stopPropagation();selectCategory(this, \'' + cat + '\', true)">' +
                                 cat +
                             '</div>'
                         ).join('') +
                     '</div>' +
                 '</div>' +
             '</td>' +
-            '<td class="amount ' + cls + '" style="text-align:right;">$' + t.amount.toFixed(2) + '</td>' +
+            '<td class="amount ' + cls + '" style="text-align:right;">' + formatAmount(t.amount) + '</td>' +
             '<td>' + t.account + '</td>' +
         '</tr>';
     }).join('');
+
+    // Bind click handlers for expandable rows
+    const currentTxns = txns;
+    tbody.querySelectorAll('.txn-row').forEach(row => {
+        row.addEventListener('click', function() {
+            const idx = parseInt(this.dataset.txnIdx);
+            toggleTxnDetail(this, currentTxns[idx]);
+        });
+    });
 }
 
 function toggleCatMenu(el) {
@@ -267,6 +418,13 @@ document.addEventListener('click', e => {
         document.querySelectorAll('.cat-menu.show').forEach(m => m.classList.remove('show'));
     }
 });
+
+// Collapse expanded rows when sorting (capture phase runs before sort handler)
+document.addEventListener('click', e => {
+    if (e.target.closest('#txnTable th.sortable')) {
+        collapseAllDetails();
+    }
+}, true);
 
 loadTransactions();
 window.addEventListener('monthChanged', loadTransactions);

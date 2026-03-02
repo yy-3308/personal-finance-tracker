@@ -111,6 +111,32 @@
         th.sortable.asc::after { content: '\25B2'; opacity: 0.8; color: var(--accent); }
         th.sortable.desc::after { content: '\25BC'; opacity: 0.8; color: var(--accent); }
         @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } nav { padding: 0 0.75rem; } nav .nav-links { gap: 0; } .container { padding: 1rem; } }
+
+        /* ── NBIM-inspired table styling for transactions ── */
+        #allTxnTable thead th { border-bottom: 2px solid var(--border); border-top: none; }
+        #allTxnTable tbody td { padding-top: 0.9rem; padding-bottom: 0.9rem; border-bottom: 1px solid transparent; }
+        #allTxnTable tbody tr:not(.txn-detail-row):nth-child(even) td { background: var(--bg-hover); }
+        #allTxnTable tbody tr:not(.txn-detail-row) { cursor: pointer; }
+        #allTxnTable tbody tr:not(.txn-detail-row):hover td { background: var(--accent-light); }
+        #allTxnTable tbody tr:not(.txn-detail-row):hover td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+        .filter-bar { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .filter-btn { padding: 0.3rem 0.7rem; border: 1px solid var(--border); border-radius: 20px; background: var(--bg-white); color: var(--text-secondary); font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: var(--font-body); }
+        .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .search-input { padding: 0.35rem 0.75rem; border: 1px solid var(--border); border-radius: 20px; font-size: 0.82rem; width: 200px; outline: none; background: var(--bg-white); color: var(--text-primary); font-family: var(--font-body); }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+        .txn-count { font-size: 0.78rem; color: var(--text-muted); margin-left: auto; }
+        .pill-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
+        .pill-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); min-width: 60px; }
+
+        /* Expandable row detail */
+        .txn-detail-row td { padding: 0 !important; border-bottom: 1px solid transparent !important; background: var(--bg-hover) !important; box-shadow: none !important; }
+        .txn-detail-row:hover td { box-shadow: none !important; }
+        .txn-detail-inner { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .txn-detail-inner.open { max-height: 200px; }
+        .txn-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; padding: 0.85rem 1rem; }
+        .txn-detail-grid .detail-item .detail-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.15rem; }
+        .txn-detail-grid .detail-item .detail-value { font-size: 0.88rem; color: var(--text-primary); font-weight: 500; }
     </style>
     <script>
         Chart.defaults.color = _t.chart.tooltipBody; Chart.defaults.borderColor = _t.vars['--border'];
@@ -179,7 +205,21 @@
         <!-- TRANSACTIONS -->
         <div id="tab-transactions" class="tab-content">
             <div class="page-header"><h2>Transactions</h2><span class="muted" style="font-size:0.85rem;">All transactions across accounts</span></div>
-            <div class="card animate-in"><table id="allTxnTable"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right;">Amount</th><th>Account</th></tr></thead><tbody id="allTxnBody"></tbody></table></div>
+            <div class="card animate-in">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all" onclick="setDemoFilter('all')">All</button>
+                        <button class="filter-btn" data-filter="expense" onclick="setDemoFilter('expense')">Expenses</button>
+                        <button class="filter-btn" data-filter="income" onclick="setDemoFilter('income')">Income</button>
+                        <button class="filter-btn" data-filter="transfer" onclick="setDemoFilter('transfer')">Transfers</button>
+                        <input type="text" class="search-input" id="demoTxnSearch" placeholder="Search description..." oninput="applyDemoFilters()">
+                    </div>
+                    <span class="txn-count" id="demoTxnCount"></span>
+                </div>
+                <div class="pill-row" id="demoCatPills"></div>
+                <div class="pill-row" id="demoAcctPills"></div>
+                <table id="allTxnTable"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right;">Amount</th><th>Account</th></tr></thead><tbody id="allTxnBody"></tbody></table>
+            </div>
         </div>
 
         <!-- INCOME -->
@@ -404,15 +444,21 @@ function makeSortable(id) {
     t.querySelectorAll('thead th').forEach((th, ci) => {
         th.classList.add('sortable');
         th.addEventListener('click', function() {
+            // Collapse any expanded detail rows before sorting
+            t.querySelectorAll('.txn-detail-row').forEach(r => r.remove());
             const asc = th.classList.contains('asc'); t.querySelectorAll('th').forEach(h=>h.classList.remove('asc','desc'));
             th.classList.add(asc?'desc':'asc'); const d = asc?-1:1;
-            const tb = t.querySelector('tbody'), rows = Array.from(tb.querySelectorAll('tr'));
+            const tb = t.querySelector('tbody'), rows = Array.from(tb.querySelectorAll('tr:not(.txn-detail-row)'));
             rows.sort((a,b)=>{const aC=a.children[ci],bC=b.children[ci];if(!aC||!bC)return 0;let aV=aC.textContent.trim(),bV=bC.textContent.trim();const aN=parseFloat(aV.replace(/[$,%+]/g,'').replace(/,/g,'')),bN=parseFloat(bV.replace(/[$,%+]/g,'').replace(/,/g,''));if(!isNaN(aN)&&!isNaN(bN))return(aN-bN)*d;return aV.localeCompare(bV)*d;});
             rows.forEach(r=>tb.appendChild(r));
         });
     });
 }
 function renderRows(tbodyId, txns, cols) { document.getElementById(tbodyId).innerHTML = txns.map(t => '<tr>' + cols(t) + '</tr>').join(''); }
+function formatAmount(amt) {
+    const abs = Math.abs(amt).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return amt >= 0 ? '+$' + abs : '-$' + abs;
+}
 
 // Spending filter
 let activeCategory = null;
@@ -424,8 +470,82 @@ function filterByCategory(cat) {
 }
 function renderSpendTxn(txns) {
     renderRows('spendTxnBody', txns, t =>
-        '<td>'+t.date+'</td><td style="color:var(--text-primary);font-weight:500;">'+t.desc+'</td><td><span class="tag bg-accent">'+t.cat+'</span></td><td class="amount negative" style="text-align:right;">$'+t.amt.toFixed(2)+'</td><td>'+t.acct+'</td>'
+        '<td>'+t.date+'</td><td style="color:var(--text-primary);font-weight:500;">'+t.desc+'</td><td><span class="tag bg-accent">'+t.cat+'</span></td><td class="amount negative" style="text-align:right;">-$'+Math.abs(t.amt).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</td><td>'+t.acct+'</td>'
     );
+}
+function collapseDemoDetails() {
+    document.querySelectorAll('#allTxnTable .txn-detail-row').forEach(r => r.remove());
+}
+function toggleDemoDetail(row, t) {
+    const existing = row.nextElementSibling;
+    if (existing && existing.classList.contains('txn-detail-row')) {
+        existing.querySelector('.txn-detail-inner').classList.remove('open');
+        setTimeout(() => existing.remove(), 300);
+        return;
+    }
+    collapseDemoDetails();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const d = new Date(t.date + 'T00:00:00');
+    const dayName = days[d.getDay()];
+    const cls = t.amt >= 0 ? 'positive' : 'negative';
+    const detailTr = document.createElement('tr');
+    detailTr.className = 'txn-detail-row';
+    detailTr.innerHTML = '<td colspan="5"><div class="txn-detail-inner"><div class="txn-detail-grid">' +
+        '<div class="detail-item"><div class="detail-label">Description</div><div class="detail-value">'+t.desc+'</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">'+dayName+', '+t.date+'</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Category</div><div class="detail-value">'+t.cat+'</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Amount</div><div class="detail-value '+cls+'">'+formatAmount(t.amt)+'</div></div>' +
+        '<div class="detail-item"><div class="detail-label">Account</div><div class="detail-value">'+t.acct+'</div></div>' +
+        '</div></div></td>';
+    row.after(detailTr);
+    requestAnimationFrame(() => detailTr.querySelector('.txn-detail-inner').classList.add('open'));
+}
+function renderAllTxn(txns) {
+    collapseDemoDetails();
+    const tbody = document.getElementById('allTxnBody');
+    tbody.innerHTML = txns.map((t, i) => {
+        const cls=t.amt>=0?'positive':'negative';
+        return '<tr class="txn-row" data-txn-idx="'+i+'"><td>'+t.date+'</td><td style="color:var(--text-primary);font-weight:500;">'+t.desc+'</td><td><span class="tag bg-accent">'+t.cat+'</span></td><td class="amount '+cls+'" style="text-align:right;">'+formatAmount(t.amt)+'</td><td>'+t.acct+'</td></tr>';
+    }).join('');
+    const currentTxns = txns;
+    tbody.querySelectorAll('.txn-row').forEach(row => {
+        row.addEventListener('click', function() {
+            toggleDemoDetail(this, currentTxns[parseInt(this.dataset.txnIdx)]);
+        });
+    });
+}
+
+// ── Demo transaction filters ──
+let demoFilter = 'all', demoCatPills = new Set(), demoAcctPills = new Set();
+function setDemoFilter(f) {
+    demoFilter = f;
+    document.querySelectorAll('#tab-transactions .filter-btn[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    applyDemoFilters();
+}
+function toggleDemoPill(type, value, btn) {
+    const set = type === 'cat' ? demoCatPills : demoAcctPills;
+    if (set.has(value)) { set.delete(value); btn.classList.remove('active'); } else { set.add(value); btn.classList.add('active'); }
+    applyDemoFilters();
+}
+function buildDemoPills() {
+    const cats = [...new Set(ALL_TXN.map(t => t.cat))].sort();
+    const accts = [...new Set(ALL_TXN.map(t => t.acct))].sort();
+    document.getElementById('demoCatPills').innerHTML = '<span class="pill-label">Category</span>' +
+        cats.map(c => '<button class="filter-btn" onclick="toggleDemoPill(\'cat\',\''+c.replace(/'/g,"\\'")+'\',this)">'+c+'</button>').join('');
+    document.getElementById('demoAcctPills').innerHTML = '<span class="pill-label">Account</span>' +
+        accts.map(a => '<button class="filter-btn" onclick="toggleDemoPill(\'acct\',\''+a.replace(/'/g,"\\'")+'\',this)">'+a+'</button>').join('');
+}
+function applyDemoFilters() {
+    const search = (document.getElementById('demoTxnSearch').value || '').toLowerCase();
+    let filtered = ALL_TXN;
+    if (demoFilter === 'expense') filtered = filtered.filter(t => t.amt < 0 && t.cat !== 'Transfer');
+    else if (demoFilter === 'income') filtered = filtered.filter(t => t.amt > 0 && t.cat !== 'Transfer');
+    else if (demoFilter === 'transfer') filtered = filtered.filter(t => t.cat === 'Transfer');
+    if (search) filtered = filtered.filter(t => t.desc.toLowerCase().includes(search) || t.acct.toLowerCase().includes(search));
+    if (demoCatPills.size > 0) filtered = filtered.filter(t => demoCatPills.has(t.cat));
+    if (demoAcctPills.size > 0) filtered = filtered.filter(t => demoAcctPills.has(t.acct));
+    document.getElementById('demoTxnCount').textContent = filtered.length + ' of ' + ALL_TXN.length + ' transactions';
+    renderAllTxn(filtered);
 }
 
 // ═══ MAIN RENDER ═══
@@ -465,10 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderSpendTxn(SPEND_TXN); makeSortable('spendTxnTable');
 
     // ── ALL TRANSACTIONS ──
-    renderRows('allTxnBody', ALL_TXN, t=>{
-        const cls=t.amt>=0?'positive':'negative'; const sign=t.amt>=0?'+$':'$';
-        return '<td>'+t.date+'</td><td style="color:var(--text-primary);font-weight:500;">'+t.desc+'</td><td><span class="tag bg-accent">'+t.cat+'</span></td><td class="amount '+cls+'" style="text-align:right;">'+sign+Math.abs(t.amt).toFixed(2)+'</td><td>'+t.acct+'</td>';
-    }); makeSortable('allTxnTable');
+    buildDemoPills(); applyDemoFilters(); makeSortable('allTxnTable');
 
     // ── INCOME ──
     document.getElementById('incomeCards').innerHTML =
