@@ -6,7 +6,7 @@
     <title>Finance Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Lora:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://unpkg.com/htmx.org@2"></script>
 
@@ -32,58 +32,76 @@
                     tooltipBg: '#1a1f2e', tooltipTitle: '#e8eaed', tooltipBody: '#8b95a5', tooltipBorder: '#2a3348', muted: '#e2e5ea' },
             },
             modern: {
-                name: 'Modern', icon: '\uD83E\uDDE0',
+                name: 'Modern', icon: '\u25A0',
                 vars: {
-                    '--bg-page': '#f5f5f7', '--bg-white': '#ffffff', '--bg-hover': '#f0f0f2',
-                    '--border': '#d2d2d7', '--border-subtle': '#e8e8ed',
-                    '--accent': '#0071e3', '--accent-light': '#e8f2ff', '--accent-hover': '#0062cc',
-                    '--positive': '#28cd41', '--positive-light': '#eafbec',
-                    '--negative': '#ff3b30', '--negative-light': '#fff1f0',
-                    '--text-primary': '#1d1d1f', '--text-secondary': '#6e6e73', '--text-muted': '#aeaeb2',
-                    '--font-display': "'Outfit', sans-serif", '--font-body': "'Outfit', sans-serif",
-                    '--radius': '14px', '--radius-sm': '10px', '--radius-pill': '50px',
-                    '--shadow-sm': '0 1px 3px rgba(0,0,0,0.04)', '--shadow': '0 2px 10px rgba(0,0,0,0.06)', '--shadow-md': '0 4px 20px rgba(0,0,0,0.08)',
+                    '--bg-page': '#f8f9fa', '--bg-white': '#ffffff', '--bg-hover': '#f0f1f3',
+                    '--border': '#d3d3d3', '--border-subtle': '#e4e4e4',
+                    '--accent': '#36454f', '--accent-light': '#eef0f2', '--accent-hover': '#2c3840',
+                    '--positive': '#2e8b57', '--positive-light': '#eef6f1',
+                    '--negative': '#c0392b', '--negative-light': '#fbeeee',
+                    '--text-primary': '#36454f', '--text-secondary': '#708090', '--text-muted': '#a0aab4',
+                    '--font-display': "'Inter', sans-serif", '--font-body': "'Inter', sans-serif",
+                    '--radius': '8px', '--radius-sm': '4px', '--radius-pill': '8px',
+                    '--shadow-sm': '0 1px 2px rgba(0,0,0,0.04)', '--shadow': '0 2px 8px rgba(0,0,0,0.06)', '--shadow-md': '0 4px 16px rgba(0,0,0,0.08)',
                 },
                 bodyWeight: '400', bodySize: '15px',
-                chart: { accent: '#0071e3', positive: '#28cd41', negative: '#ff3b30', grid: 'rgba(210,210,215,0.6)',
-                    palette: ['#0071e3','#28cd41','#ff2d55','#af52de','#5ac8fa','#ff9500','#ff3b30','#30d158','#bf5af2','#ff9f0a','#64d2ff','#ff375f'],
-                    tooltipBg: '#ffffff', tooltipTitle: '#1d1d1f', tooltipBody: '#6e6e73', tooltipBorder: '#d2d2d7', muted: '#e2e5ea' },
+                chart: { accent: '#36454f', positive: '#2e8b57', negative: '#c0392b', grid: 'rgba(211,211,211,0.6)',
+                    palette: ['#36454f','#708090','#2e8b57','#c0392b','#5f9ea0','#b0c4de','#8fbc8f','#cd853f','#778899','#bc8f8f','#4682b4','#6b8e23'],
+                    tooltipBg: '#ffffff', tooltipTitle: '#36454f', tooltipBody: '#708090', tooltipBorder: '#d3d3d3', muted: '#d3d3d3' },
             },
             cute: {
-                name: 'Cute', icon: '\uD83C\uDF38',
+                name: 'Desert Rose', icon: '\uD83C\uDF39',
                 vars: {
-                    '--bg-page': '#fef5f0', '--bg-white': '#ffffff', '--bg-hover': '#fff0ea',
-                    '--border': '#f0ddd5', '--border-subtle': '#f5ebe5',
-                    '--accent': '#ff6b9d', '--accent-light': '#fff0f5', '--accent-hover': '#ee5a8a',
-                    '--positive': '#10b981', '--positive-light': '#ecfdf5',
-                    '--negative': '#f43f5e', '--negative-light': '#fff1f2',
-                    '--text-primary': '#3f2d23', '--text-secondary': '#8b7060', '--text-muted': '#bba090',
-                    '--font-display': "'Fredoka', sans-serif", '--font-body': "'Nunito', sans-serif",
-                    '--radius': '20px', '--radius-sm': '14px', '--radius-pill': '50px',
-                    '--shadow-sm': '0 2px 8px rgba(180,120,100,0.06)', '--shadow': '0 4px 16px rgba(180,120,100,0.1)', '--shadow-md': '0 8px 24px rgba(180,120,100,0.12)',
-                },
-                bodyWeight: '600', bodySize: '15px',
-                chart: { accent: '#ff6b9d', positive: '#10b981', negative: '#f43f5e', grid: 'rgba(240,221,213,0.8)',
-                    palette: ['#ff6b9d','#10b981','#f472b6','#a78bfa','#60a5fa','#fbbf24','#f43f5e','#34d399','#c084fc','#fb923c','#60a5fa','#f472b6'],
-                    tooltipBg: '#ffffff', tooltipTitle: '#3f2d23', tooltipBody: '#8b7060', tooltipBorder: '#f0ddd5', muted: '#e2e5ea' },
-            },
-            vintage: {
-                name: 'Vintage', icon: '\uD83D\uDCDC',
-                vars: {
-                    '--bg-page': '#faf6f0', '--bg-white': '#fffdf8', '--bg-hover': '#f5ede3',
-                    '--border': '#e0d5c5', '--border-subtle': '#eae2d6',
-                    '--accent': '#b47a4a', '--accent-light': '#faf0e5', '--accent-hover': '#9a6840',
-                    '--positive': '#5a8a60', '--positive-light': '#f0f7f0',
-                    '--negative': '#b54545', '--negative-light': '#fdf0f0',
-                    '--text-primary': '#3a2e22', '--text-secondary': '#7a6a55', '--text-muted': '#a89880',
-                    '--font-display': "'Caveat', cursive", '--font-body': "'Patrick Hand', cursive",
-                    '--radius': '10px', '--radius-sm': '6px', '--radius-pill': '8px',
-                    '--shadow-sm': '0 1px 4px rgba(120,90,50,0.06)', '--shadow': '0 2px 10px rgba(120,90,50,0.1)', '--shadow-md': '0 4px 16px rgba(120,90,50,0.12)',
+                    '--bg-page': '#faf5f0', '--bg-white': '#fffbf7', '--bg-hover': '#f5ede5',
+                    '--border': '#e0cfc2', '--border-subtle': '#ebe1d8',
+                    '--accent': '#b87d6d', '--accent-light': '#f8efe9', '--accent-hover': '#a06c5e',
+                    '--positive': '#6b8f71', '--positive-light': '#f0f5f0',
+                    '--negative': '#c4565a', '--negative-light': '#fdf0f0',
+                    '--text-primary': '#5d2e46', '--text-secondary': '#8a6070', '--text-muted': '#b8a0a8',
+                    '--font-display': "'Playfair Display', serif", '--font-body': "'Lato', sans-serif",
+                    '--radius': '12px', '--radius-sm': '8px', '--radius-pill': '24px',
+                    '--shadow-sm': '0 1px 4px rgba(93,46,70,0.05)', '--shadow': '0 2px 12px rgba(93,46,70,0.08)', '--shadow-md': '0 4px 20px rgba(93,46,70,0.1)',
                 },
                 bodyWeight: '400', bodySize: '15px',
-                chart: { accent: '#b47a4a', positive: '#5a8a60', negative: '#b54545', grid: 'rgba(224,213,197,0.8)',
-                    palette: ['#b47a4a','#5a8a60','#c25450','#8b6fa0','#5689a0','#c9a227','#a0522d','#6b8e6b','#957dad','#cc7722','#4682b4','#cd5c5c'],
-                    tooltipBg: '#fffdf8', tooltipTitle: '#3a2e22', tooltipBody: '#7a6a55', tooltipBorder: '#e0d5c5', muted: '#e2e5ea' },
+                chart: { accent: '#d4a5a5', positive: '#6b8f71', negative: '#c4565a', grid: 'rgba(224,207,194,0.7)',
+                    palette: ['#d4a5a5','#b87d6d','#6b8f71','#5d2e46','#c4565a','#e8d5c4','#8a6070','#c9967b','#7a9e7e','#9b5064','#d4b8a0','#a0586c'],
+                    tooltipBg: '#fffbf7', tooltipTitle: '#5d2e46', tooltipBody: '#8a6070', tooltipBorder: '#e0cfc2', muted: '#e0cfc2' },
+            },
+            vintage: {
+                name: 'Golden Hour', icon: '\u2600',
+                vars: {
+                    '--bg-page': '#faf6f0', '--bg-white': '#fffcf5', '--bg-hover': '#f5ede0',
+                    '--border': '#ddd0bc', '--border-subtle': '#e8dfd0',
+                    '--accent': '#f4a900', '--accent-light': '#fef6e0', '--accent-hover': '#d99400',
+                    '--positive': '#5a8a5a', '--positive-light': '#f0f7f0',
+                    '--negative': '#c1666b', '--negative-light': '#fcf0f0',
+                    '--text-primary': '#4a403a', '--text-secondary': '#7a6e62', '--text-muted': '#a89880',
+                    '--font-display': "'Merriweather', serif", '--font-body': "'Source Sans 3', sans-serif",
+                    '--radius': '10px', '--radius-sm': '6px', '--radius-pill': '10px',
+                    '--shadow-sm': '0 1px 4px rgba(74,64,58,0.06)', '--shadow': '0 2px 10px rgba(74,64,58,0.1)', '--shadow-md': '0 4px 16px rgba(74,64,58,0.12)',
+                },
+                bodyWeight: '400', bodySize: '15px',
+                chart: { accent: '#f4a900', positive: '#5a8a5a', negative: '#c1666b', grid: 'rgba(221,208,188,0.8)',
+                    palette: ['#f4a900','#c1666b','#5a8a5a','#4a403a','#d4b896','#b87333','#8b7355','#cc9933','#7a8a5a','#a0522d','#d2a679','#6b8e6b'],
+                    tooltipBg: '#fffcf5', tooltipTitle: '#4a403a', tooltipBody: '#7a6e62', tooltipBorder: '#ddd0bc', muted: '#ddd0bc' },
+            },
+            light: {
+                name: 'Arctic Frost', icon: '\u2744',
+                vars: {
+                    '--bg-page': '#f0f4f8', '--bg-white': '#fafcff', '--bg-hover': '#e8eef6',
+                    '--border': '#c8d4e2', '--border-subtle': '#dde5ef',
+                    '--accent': '#4a6fa5', '--accent-light': '#e8f0fa', '--accent-hover': '#3d5e8e',
+                    '--positive': '#3ba676', '--positive-light': '#eaf7f1',
+                    '--negative': '#d64c4c', '--negative-light': '#fceeee',
+                    '--text-primary': '#2c3e50', '--text-secondary': '#607d8b', '--text-muted': '#95a5b4',
+                    '--font-display': "'Inter', sans-serif", '--font-body': "'Inter', sans-serif",
+                    '--radius': '10px', '--radius-sm': '6px', '--radius-pill': '20px',
+                    '--shadow-sm': '0 1px 3px rgba(74,111,165,0.05)', '--shadow': '0 2px 10px rgba(74,111,165,0.08)', '--shadow-md': '0 4px 18px rgba(74,111,165,0.1)',
+                },
+                bodyWeight: '400', bodySize: '15px',
+                chart: { accent: '#4a6fa5', positive: '#3ba676', negative: '#d64c4c', grid: 'rgba(200,212,226,0.7)',
+                    palette: ['#4a6fa5','#3ba676','#d64c4c','#7b9ec4','#5eaaa8','#d4e4f7','#2c3e50','#6fa3d6','#48b583','#8bb0cc','#a3c4e0','#3d8eb9'],
+                    tooltipBg: '#fafcff', tooltipTitle: '#2c3e50', tooltipBody: '#607d8b', tooltipBorder: '#c8d4e2', muted: '#c8d4e2' },
             },
         };
 
@@ -111,15 +129,15 @@
 
     <style>
         :root {
-            --bg-page: #f5f5f7; --bg-white: #ffffff; --bg-hover: #f0f0f2;
-            --border: #d2d2d7; --border-subtle: #e8e8ed;
-            --accent: #0071e3; --accent-light: #e8f2ff; --accent-hover: #0062cc;
-            --positive: #28cd41; --positive-light: #eafbec;
-            --negative: #ff3b30; --negative-light: #fff1f0;
-            --text-primary: #1d1d1f; --text-secondary: #6e6e73; --text-muted: #aeaeb2;
-            --font-display: 'Outfit', sans-serif; --font-body: 'Outfit', sans-serif;
-            --radius: 14px; --radius-sm: 10px; --radius-pill: 50px;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04); --shadow: 0 2px 10px rgba(0,0,0,0.06); --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --bg-page: #f8f9fa; --bg-white: #ffffff; --bg-hover: #f0f1f3;
+            --border: #d3d3d3; --border-subtle: #e4e4e4;
+            --accent: #36454f; --accent-light: #eef0f2; --accent-hover: #2c3840;
+            --positive: #2e8b57; --positive-light: #eef6f1;
+            --negative: #c0392b; --negative-light: #fbeeee;
+            --text-primary: #36454f; --text-secondary: #708090; --text-muted: #a0aab4;
+            --font-display: 'Inter', sans-serif; --font-body: 'Inter', sans-serif;
+            --radius: 8px; --radius-sm: 4px; --radius-pill: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04); --shadow: 0 2px 8px rgba(0,0,0,0.06); --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -507,10 +525,6 @@
         .animate-in {
             animation: slideUp 0.35s ease forwards;
             opacity: 0;
-        }
-
-        [data-theme="cute"] .animate-in {
-            animation: popUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .animate-in:nth-child(1) { animation-delay: 0.03s; }
