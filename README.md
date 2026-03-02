@@ -33,13 +33,20 @@ So I built my own. It runs locally, reads the statements I already download from
 - **PDF parsing:** pdfplumber
 - **XLSX parsing:** openpyxl
 
-## Setup
+## Quick Start
 
 ```bash
-# Clone
 git clone https://github.com/yy-3308/personal-finance-tracker.git
 cd personal-finance-tracker
+./start.sh
+```
 
+That's it. The script checks for Python, sets up everything automatically, and opens the app in your browser.
+
+<details>
+<summary>Manual setup (if you prefer)</summary>
+
+```bash
 # Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
@@ -56,6 +63,7 @@ python app.py
 ```
 
 Open http://localhost:5001 in your browser.
+</details>
 
 ## Usage
 
