@@ -239,7 +239,8 @@ def sync_investment_transactions(client, plaid_item, db_session):
             "dividend": "dividend", "cash": "cash",
             "transfer": "transfer", "fee": "fee",
         }
-        action = action_map.get(txn.get("type", "").lower(), txn.get("type", "other"))
+        txn_type = str(txn.get("type", "")).lower()
+        action = action_map.get(txn_type, txn_type or "other")
 
         plaid_txn_id = txn.get("investment_transaction_id", "")
         existing = (
