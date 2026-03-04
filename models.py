@@ -166,3 +166,15 @@ class CsvProfile(Base):
     column_mapping = Column(String, nullable=False)
     date_format = Column(String, default="%Y-%m-%d")
     account_type = Column(String, default="checking")
+
+
+class PlaidItem(Base):
+    """Linked bank via Plaid — stores access token per institution."""
+    __tablename__ = "plaid_items"
+    id = Column(Integer, primary_key=True)
+    item_id = Column(String, nullable=False, unique=True)
+    access_token = Column(String, nullable=False)
+    institution_id = Column(String)
+    institution_name = Column(String)
+    needs_relink = Column(Integer, default=0)  # 1 = ITEM_LOGIN_REQUIRED, 0 = healthy
+    transactions_cursor = Column(String)
