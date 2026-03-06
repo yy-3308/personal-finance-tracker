@@ -5,7 +5,7 @@
 
 set -e
 
-PORT=5001
+PORT=5002
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
