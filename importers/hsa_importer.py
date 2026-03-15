@@ -6,7 +6,7 @@ from datetime import datetime
 import pdfplumber
 
 from categorizer import categorize
-from parse_utils import clean_amount_unsigned
+from importers.parse_utils import clean_amount_unsigned
 
 
 def is_hsa_pdf(filepath):

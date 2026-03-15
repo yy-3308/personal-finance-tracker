@@ -331,7 +331,7 @@
                     </div>
                     <div style="display:flex;gap:0.75rem;align-items:flex-start;">
                         <span style="font-size:1.3rem;flex-shrink:0;margin-top:0.1rem;">&#x1F512;</span>
-                        <div><div style="font-weight:600;color:var(--text-primary);margin-bottom:0.15rem;">They want all my data</div><span style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">Linking bank credentials to third-party services means someone else has access to my full transaction history. One breach and it's all exposed. And there's no telling how these apps might use or monetize that data down the road.</span></div>
+                        <div><div style="font-weight:600;color:var(--text-primary);margin-bottom:0.15rem;">They want all my data</div><span style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">Most apps store your full transaction history on their servers, with no clear policy on how it's used. I wanted a tool where syncing is opt-in and the data stays under my control &mdash; not uploaded to someone else's cloud.</span></div>
                     </div>
                     <div style="display:flex;gap:0.75rem;align-items:flex-start;">
                         <span style="font-size:1.3rem;flex-shrink:0;margin-top:0.1rem;">&#x1F4B8;</span>
@@ -341,12 +341,17 @@
             </div>
             <div class="card animate-in" style="max-width:720px;">
                 <h3>The Solution</h3>
-                <p style="font-size:0.92rem;line-height:1.7;color:var(--text-secondary);">So I built my own. It runs 100% locally on your machine, reads the bank statements you already download, and does exactly what you need &mdash; nothing more.</p>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;margin-top:1rem;">
+                <p style="font-size:0.92rem;line-height:1.7;color:var(--text-secondary);">So I built my own. It runs 100% locally on your machine, syncs automatically via Plaid or reads statements you download, and does exactly what you need &mdash; nothing more.</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-top:1rem;">
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F3E0;</div>
                         <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">Runs Locally</div>
                         <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Your data never leaves your computer</div>
+                    </div>
+                    <div style="text-align:center;padding:1rem 0.5rem;">
+                        <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F3E6;</div>
+                        <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">Plaid Bank Sync</div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Connect 10,000+ banks &amp; pull transactions automatically</div>
                     </div>
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F4C4;</div>
@@ -355,8 +360,8 @@
                     </div>
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F3A8;</div>
-                        <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">4 Themes</div>
-                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Bloomberg, Modern, Cute, Vintage</div>
+                        <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">6 Themes</div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;">Bloomberg, Modern, EVA, Command &amp; more</div>
                     </div>
                     <div style="text-align:center;padding:1rem 0.5rem;">
                         <div style="font-size:1.8rem;margin-bottom:0.3rem;">&#x1F4B0;</div>
@@ -367,19 +372,19 @@
             </div>
             <div class="card animate-in" style="max-width:720px;">
                 <h3>What's Next</h3>
-                <p style="font-size:0.92rem;line-height:1.7;color:var(--text-secondary);margin-bottom:0.75rem;">Right now, the app reads manually downloaded statements from your bank. It works, but it means you have to remember to download files each month. I'm exploring ways to automatically sync transactions so you don't have to.</p>
+                <p style="font-size:0.92rem;line-height:1.7;color:var(--text-secondary);margin-bottom:0.75rem;">Plaid bank sync is live &mdash; connect your accounts and transactions import automatically. Here's what else is on the roadmap:</p>
                 <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.75rem;">
+                    <div style="display:flex;gap:0.6rem;align-items:flex-start;">
+                        <span style="font-size:1.1rem;flex-shrink:0;">&#x2705;</span>
+                        <div><strong style="color:var(--positive);">Automatic Bank Sync &mdash; Shipped</strong><br><span style="font-size:0.85rem;color:var(--text-secondary);">Plaid integration is live. Connect 10,000+ institutions and pull transactions automatically, no manual downloads needed.</span></div>
+                    </div>
                     <div style="display:flex;gap:0.6rem;align-items:flex-start;">
                         <span style="font-size:1.1rem;flex-shrink:0;">&#x1F4B3;</span>
                         <div><strong style="color:var(--text-primary);">Credit Card Points Tracking</strong><br><span style="font-size:0.85rem;color:var(--text-secondary);">Track points and miles balances across cards, with category multipliers and cents-per-point valuation.</span></div>
                     </div>
                     <div style="display:flex;gap:0.6rem;align-items:flex-start;">
-                        <span style="font-size:1.1rem;flex-shrink:0;">&#x2705;</span>
+                        <span style="font-size:1.1rem;flex-shrink:0;">&#x1F4CB;</span>
                         <div><strong style="color:var(--text-primary);">Card Perks Tracker</strong><br><span style="font-size:0.85rem;color:var(--text-secondary);">Annual checklist of credits and benefits per card &mdash; see what you've used, what's expiring, and whether you're getting your money's worth.</span></div>
-                    </div>
-                    <div style="display:flex;gap:0.6rem;align-items:flex-start;">
-                        <span style="font-size:1.1rem;flex-shrink:0;">&#x1F50C;</span>
-                        <div><strong style="color:var(--text-primary);">Automatic Bank Sync</strong><br><span style="font-size:0.85rem;color:var(--text-secondary);">Exploring Plaid integration to pull transactions automatically so you don't have to download files manually.</span></div>
                     </div>
                 </div>
             </div>

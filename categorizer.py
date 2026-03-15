@@ -3,12 +3,9 @@
 from models import CategoryRule
 
 # Expanded default keyword → category map
-# NOTE: Income must come before Travel so "EXPEDIA, INC" payroll matches
-# Income before "EXPEDIA" matches Travel.
 DEFAULT_RULES = {
     "Income": [
         "DIR DEP", "PAYROLL", "DIRECT DEPOSIT",
-        "EXPEDIA, INC", "EXPEDIA INC",
     ],
     "Dining": [
         "RESTAURANT", "DOORDASH", "GRUBHUB", "UBER EATS", "UBEREATS",

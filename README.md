@@ -97,24 +97,24 @@ Get credentials at [dashboard.plaid.com](https://dashboard.plaid.com). Without `
 ## Project Structure
 
 ```
-app.py                  # Flask routes and API endpoints
-models.py               # SQLAlchemy models
-database.py             # DB engine setup
-categorizer.py          # Transaction categorization rules
-config.py               # Paths and configuration
-plaid_client.py         # Plaid API client
-plaid_importer.py       # Plaid sync logic (transactions, balances, investments)
-importer.py             # Generic CSV import
-pdf_importer.py         # Chase PDF parser
-citi_importer.py        # Citi PDF parser
-amex_importer.py        # Amex XLSX parser
-wellsfargo_importer.py  # Wells Fargo PDF/CSV parser
-fidelity_importer.py    # Fidelity PDF parser
-etrade_importer.py      # E*Trade PDF parser
-mortgage_importer.py    # CrossCountry Mortgage PDF parser
-hsa_importer.py         # HealthEquity HSA PDF parser
-templates/              # Jinja2 HTML templates
-data/                   # SQLite database (gitignored)
+app.py                          # Flask routes and API endpoints
+models.py                       # SQLAlchemy models
+database.py                     # DB engine setup
+categorizer.py                  # Transaction categorization rules
+config.py                       # Paths and configuration
+importers/
+  plaid_client.py               # Plaid API client
+  plaid_importer.py             # Plaid sync logic (transactions, balances, investments)
+  importer.py                   # Generic CSV import
+  amex_importer.py              # Amex XLSX parser
+  wellsfargo_importer.py        # Wells Fargo PDF/CSV parser
+  fidelity_importer.py          # Fidelity PDF parser
+  etrade_importer.py            # E*Trade PDF parser
+  mortgage_importer.py          # Mortgage PDF parser
+  hsa_importer.py               # HealthEquity HSA PDF parser
+  parse_utils.py                # Shared parsing utilities
+templates/                      # Jinja2 HTML templates
+data/                           # SQLite database (gitignored)
 ```
 
 ## Privacy

@@ -4,7 +4,7 @@ import shutil
 import pytest
 
 from database import get_session, init_db
-from importer import detect_csv_format, import_file, parse_csv, scan_import_folder
+from importers.importer import detect_csv_format, import_file, parse_csv, scan_import_folder
 from models import Account, CsvProfile, Transaction
 
 FIXTURES = os.path.join(os.path.dirname(__file__), "fixtures")

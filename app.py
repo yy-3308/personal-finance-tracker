@@ -7,16 +7,15 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, url
 
 from config import Config
 from database import get_session, init_db
-from amex_importer import is_amex_xlsx, parse_amex_xlsx
-from citi_importer import is_citi_pdf, parse_citi_pdf
-from wellsfargo_importer import (
+from importers.amex_importer import is_amex_xlsx, parse_amex_xlsx
+from importers.wellsfargo_importer import (
     is_wellsfargo_csv, is_wellsfargo_pdf, parse_wellsfargo_csv, parse_wellsfargo_pdf,
 )
-from etrade_importer import is_etrade_pdf, parse_etrade_pdf
-from hsa_importer import is_hsa_pdf, parse_hsa_pdf
-from mortgage_importer import is_mortgage_pdf, parse_mortgage_pdf
-from fidelity_importer import is_fidelity_pdf, parse_fidelity_pdf, parse_fidelity_statement
-from importer import (
+from importers.etrade_importer import is_etrade_pdf, parse_etrade_pdf
+from importers.hsa_importer import is_hsa_pdf, parse_hsa_pdf
+from importers.mortgage_importer import is_mortgage_pdf, parse_mortgage_pdf
+from importers.fidelity_importer import is_fidelity_pdf, parse_fidelity_pdf, parse_fidelity_statement
+from importers.importer import (
     detect_csv_format,
     import_file,
     move_to_processed,
@@ -27,11 +26,10 @@ from models import (
     Account, Balance, CategoryRule, CsvProfile, Holding, HsaSummary,
     InvestmentActivity, Mortgage, PlaidItem, StockPlanGrant, Transaction, VestingEvent,
 )
-from pdf_importer import parse_pdf
 import certifi
 os.environ.setdefault("SSL_CERT_FILE", certifi.where())
-from plaid_client import get_plaid_client
-from plaid_importer import (
+from importers.plaid_client import get_plaid_client
+from importers.plaid_importer import (
     create_link_token, exchange_public_token,
     get_institution_name, sync_transactions,
     sync_balances, sync_holdings, sync_investment_transactions,
@@ -245,64 +243,6 @@ def create_app(test_config=None):
                 files.append(os.path.join(folder, f))
         return files
 
-    def _import_pdf(filepath, session):
-        """Import a PDF statement. Returns (num_imported, error_or_None)."""
-        result = parse_pdf(filepath)
-        if result is None:
-            return 0, f"Unrecognized PDF format: {os.path.basename(filepath)}"
-
-        # Determine account name from PDF type
-        if result["type"] == "chase_credit_card":
-            acct_name = f"Chase Credit Card ({result['last4']})"
-            acct_type = "credit_card"
-        else:
-            acct_name = f"Chase Checking"
-            acct_type = "checking"
-
-        # Find or create account
-        account = (
-            session.query(Account)
-            .filter(Account.name == acct_name)
-            .first()
-        )
-        if not account:
-            account = Account(name=acct_name, account_type=acct_type, institution="Chase")
-            session.add(account)
-            session.commit()
-
-        # Import transactions with dedup
-        existing_fps = set(
-            fp for (fp,) in session.query(Transaction.fingerprint)
-            .filter(Transaction.account_id == account.id).all()
-        )
-        new_count = 0
-        for t in result["transactions"]:
-            txn = Transaction(
-                date=t["date"], amount=t["amount"], category=t["category"],
-                description=t["description"], account_id=account.id,
-            )
-            if txn.fingerprint not in existing_fps:
-                session.add(txn)
-                existing_fps.add(txn.fingerprint)
-                new_count += 1
-        session.commit()
-
-        # Save balance snapshot
-        if result.get("balance"):
-            month = datetime.now().strftime("%Y-%m")
-            existing_bal = (
-                session.query(Balance)
-                .filter(Balance.account_id == account.id, Balance.month == month)
-                .first()
-            )
-            if existing_bal:
-                existing_bal.balance = result["balance"]
-            else:
-                session.add(Balance(month=month, account_id=account.id, balance=result["balance"]))
-            session.commit()
-
-        return new_count, None
-
     def _import_fidelity_csv(filepath, session):
         """Import a Fidelity CSV statement. Returns (num_imported, error_or_None)."""
         result = parse_fidelity_statement(filepath)
@@ -487,7 +427,7 @@ def create_app(test_config=None):
         for v in result["vestings"]:
             session.add(VestingEvent(
                 month=month, account_id=account.id,
-                date=v["date"], symbol="EXPE",
+                date=v["date"], symbol=v.get("security", ""),
                 quantity=v["quantity"], amount=v["amount"],
             ))
         session.commit()
@@ -552,59 +492,6 @@ def create_app(test_config=None):
         session.commit()
 
         return 1, None
-
-    def _import_citi_pdf(filepath, session):
-        """Import a Citi PDF statement (credit card or savings). Returns (num_imported, error_or_None)."""
-        result = parse_citi_pdf(filepath)
-        month = result["month"]
-
-        if result["type"] == "citi_credit_card":
-            acct_name = result["card_name"]
-            acct_type = "credit_card"
-            institution = "Citi"
-        else:
-            acct_name = result.get("account_name", "Citi Savings")
-            acct_type = "savings"
-            institution = "Citi"
-
-        # Find or create account
-        account = session.query(Account).filter(Account.name == acct_name).first()
-        if not account:
-            account = Account(name=acct_name, account_type=acct_type, institution=institution)
-            session.add(account)
-            session.commit()
-
-        # Import transactions with dedup
-        existing_fps = set(
-            fp for (fp,) in session.query(Transaction.fingerprint)
-            .filter(Transaction.account_id == account.id).all()
-        )
-        new_count = 0
-        for t in result["transactions"]:
-            txn = Transaction(
-                date=t["date"], amount=t["amount"], category=t["category"],
-                description=t["description"], account_id=account.id,
-            )
-            if txn.fingerprint not in existing_fps:
-                session.add(txn)
-                existing_fps.add(txn.fingerprint)
-                new_count += 1
-        session.commit()
-
-        # Save balance snapshot
-        balance_val = result.get("balance", 0)
-        existing_bal = (
-            session.query(Balance)
-            .filter(Balance.account_id == account.id, Balance.month == month)
-            .first()
-        )
-        if existing_bal:
-            existing_bal.balance = balance_val
-        else:
-            session.add(Balance(month=month, account_id=account.id, balance=balance_val))
-        session.commit()
-
-        return new_count, None
 
     def _import_hsa_pdf(filepath, session):
         """Import a HealthEquity HSA statement PDF. Returns (num_imported, error_or_None)."""
@@ -797,8 +684,6 @@ def create_app(test_config=None):
                     count, error = _import_mortgage_pdf(filepath, session)
                 elif is_hsa_pdf(filepath):
                     count, error = _import_hsa_pdf(filepath, session)
-                elif is_citi_pdf(filepath):
-                    count, error = _import_citi_pdf(filepath, session)
                 elif is_etrade_pdf(filepath):
                     count, error = _import_etrade_pdf(filepath, session)
                 elif is_wellsfargo_pdf(filepath):
@@ -806,7 +691,7 @@ def create_app(test_config=None):
                 elif is_fidelity_pdf(filepath):
                     count, error = _import_fidelity_pdf(filepath, session)
                 else:
-                    count, error = _import_pdf(filepath, session)
+                    count, error = 0, f"Unrecognized PDF format: {os.path.basename(filepath)}"
                 if error:
                     errors.append(error)
                 else:
