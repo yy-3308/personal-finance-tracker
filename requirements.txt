@@ -2,5 +2,7 @@ flask==3.1.*
 sqlalchemy==2.0.*
 pytest==8.*
 pdfplumber
+openpyxl
 python-dotenv
 plaid-python
+certifi

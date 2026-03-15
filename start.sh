@@ -61,5 +61,5 @@ echo ""
 # Open browser after a short delay
 (sleep 1.5 && open "http://localhost:$PORT" 2>/dev/null || xdg-open "http://localhost:$PORT" 2>/dev/null || true) &
 
-# Run the app
-$PY app.py
+# Run the app (debug mode for local development)
+FLASK_DEBUG=1 $PY app.py
